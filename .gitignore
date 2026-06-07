@@ -139,3 +139,6 @@ terraform.rc
 
 # Docker Compose volumes
 api-logs/
+
+# OWASP ZAP temporary files
+zap.yaml
