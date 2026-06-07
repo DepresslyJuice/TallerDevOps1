@@ -8,17 +8,30 @@ terraform {
     }
   }
 
-  # Configuración del Backend Remoto Seguro para el archivo de estado
-  # Nota: El bucket de S3 y la tabla de DynamoDB deben existir previamente o crearse en un paso de bootstrapping
-  backend "s3" {
-    bucket         = "taller-devops-terraform-state-bucket" # Reemplazar con el nombre de tu bucket de S3
-    key            = "staging/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "taller-devops-terraform-locks"       # Tabla DynamoDB para State Locking
-    encrypt        = true
-  }
+  # Comentado para desarrollo local offline (sin créditos de AWS)
+  # backend "s3" {
+  #   bucket         = "taller-devops-terraform-state-bucket"
+  #   key            = "staging/terraform.tfstate"
+  #   region         = "us-east-1"
+  #   dynamodb_table = "taller-devops-terraform-locks"
+  #   encrypt        = true
+  # }
 }
 
 provider "aws" {
-  region = var.aws_region
+  region                      = var.aws_region
+  access_key                  = "mock_access_key"
+  secret_key                  = "mock_secret_key"
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    s3       = "http://localhost:4566"
+    rds      = "http://localhost:4566"
+    eks      = "http://localhost:4566"
+    ec2      = "http://localhost:4566"
+    dynamodb = "http://localhost:4566"
+    iam      = "http://localhost:4566"
+  }
 }
