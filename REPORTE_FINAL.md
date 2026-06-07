@@ -12,7 +12,7 @@ Para cumplir con la verificación dinámica de seguridad (DAST), se realiza un e
 Ejecuta el siguiente comando en tu terminal para iniciar un escaneo base y generar el reporte interactivo:
 
 ```bash
-docker run --rm -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+docker run --rm --add-host=host.docker.internal:host-gateway -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
   -t http://host.docker.internal:3000 \
   -r zap_report.html
 ```
