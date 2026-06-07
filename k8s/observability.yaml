@@ -4,18 +4,17 @@ metadata:
   name: prometheus-server-conf
   labels:
     name: prometheus-server-conf
-spec:
-  data:
-    prometheus.yml: |-
-      global:
-        scrape_interval: 5s
-        evaluation_interval: 5s
+data:
+  prometheus.yml: |-
+    global:
+      scrape_interval: 5s
+      evaluation_interval: 5s
 
-      scrape_configs:
-        - job_name: 'taller-devops-api'
-          static_configs:
-            # Apunta al servicio interno de Kubernetes creado en deployment.yaml
-            - targets: ['taller-devops-api.default.svc.cluster.local:80']
+    scrape_configs:
+      - job_name: 'taller-devops-api'
+        static_configs:
+          # Apunta al servicio interno de Kubernetes creado en deployment.yaml
+          - targets: ['taller-devops-api.default.svc.cluster.local:80']
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -68,16 +67,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasources
-spec:
-  data:
-    datasource.yaml: |-
-      apiVersion: 1
-      datasources:
-      - name: Prometheus
-        type: prometheus
-        access: proxy
-        url: http://prometheus-service.default.svc.cluster.local:9090
-        isDefault: true
+data:
+  datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      url: http://prometheus-service.default.svc.cluster.local:9090
+      isDefault: true
 ---
 apiVersion: apps/v1
 kind: Deployment
