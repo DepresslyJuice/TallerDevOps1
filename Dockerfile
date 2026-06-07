@@ -7,7 +7,7 @@ RUN npm install -g pnpm@11.5.2
 WORKDIR /app
 
 # Copy dependency definition files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
 
 # Install all dependencies (including devDependencies for build)
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
@@ -30,7 +30,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Copy package info
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
 
 # Install production dependencies only
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
