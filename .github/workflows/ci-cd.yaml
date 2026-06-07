@@ -1,0 +1,119 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    branches: [ main, staging ]
+
+jobs:
+  # --- 1. INTEGRACION CONTINUA (CI) ---
+  ci-testing:
+    name: Build & Test (CI)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Linter
+        run: pnpm exec tsc --noEmit
+
+      - name: Run Tests with Coverage
+        run: pnpm test:coverage
+
+      # Opcional: Validar que la cobertura cumpla con >= 80% (si vitest está configurado para fallar ante baja cobertura)
+      # Para vitest.config.ts se puede añadir el umbral, o bien verificarlo aquí
+
+  security-scan:
+    name: Security Scan (SAST & SCA)
+    runs-on: ubuntu-latest
+    needs: ci-testing
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # SCA: Escaneo de dependencias y código fuente con Trivy
+      - name: Run Trivy Vulnerability Scanner (Filesystem)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          exit-code: '1' # Falla el pipeline si encuentra vulnerabilidades críticas
+          severity: 'CRITICAL'
+
+  dockerize:
+    name: Dockerize Image
+    runs-on: ubuntu-latest
+    needs: security-scan
+    if: github.event_name == 'push' # Solo construir en fusiones de ramas
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Escaneo de secretos en el pipeline
+      - name: Run Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true # Cargar en docker daemon local para escaneo posterior
+          tags: taller-devops-api:${{ github.sha }}
+
+      # Escanear la imagen construida con Trivy (Zero Critical CVEs)
+      - name: Run Trivy Scanner on Container Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'taller-devops-api:${{ github.sha }}'
+          exit-code: '1'
+          severity: 'CRITICAL'
+          limit: '0'
+
+  # --- 2. DESPLIEGUE CONTINUO (CD) ---
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: dockerize
+    if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/main'
+    environment: staging
+    steps:
+      - name: Deploying to Staging Environment
+        run: |
+          echo "Simulando despliegue de imagen a clúster de Kubernetes en Staging..."
+          # Aquí iría: aws eks update-kubeconfig ...
+          # seguido de: kubectl apply -f k8s/deployment.yaml ...
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main'
+    # Utiliza la funcionalidad de entornos de GitHub para requerir aprobación manual
+    environment:
+      name: production
+    steps:
+      - name: Deploying to Production Environment
+        run: |
+          echo "Simulando despliegue de imagen a clúster de Kubernetes en Producción tras aprobación manual..."
+          # Aquí iría: aws eks update-kubeconfig ...
+          # seguido de: kubectl apply -f k8s/deployment.yaml ...

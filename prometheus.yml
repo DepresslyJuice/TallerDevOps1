@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s # Scrape targets frequently for demo/workshop purposes
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'taller-devops-api'
+    static_configs:
+      - targets: ['api:3000']
