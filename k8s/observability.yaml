@@ -102,10 +102,16 @@ spec:
           volumeMounts:
             - name: grafana-datasources-volume
               mountPath: /etc/grafana/provisioning/datasources/
+            - name: grafana-storage
+              mountPath: /var/lib/grafana
       volumes:
         - name: grafana-datasources-volume
           configMap:
             name: grafana-datasources
+        - name: grafana-storage
+          hostPath:
+            path: /data/grafana
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
