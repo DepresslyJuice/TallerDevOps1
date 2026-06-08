@@ -1,0 +1,25 @@
+API:
+kubectport-forward svc/taller-devops-api 3000:80
+
+
+Generar latencia:
+while true; do curl "http://localhost:3000/api/users?latency=250"; sleep 0.05; done
+
+
+Ver elasticidad:
+kubectl get hpa -w
+
+
+Prometheus:
+kubectl port-forward svc/prometheus-service 9090:9090
+
+
+Grafana:
+kubectl port-forward svc/grafana-service 3001:3000
+
+
+Generar html:
+docker run --rm --network host -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py   -t http://localhost:3000   -r zap_report.html
+
+
+
