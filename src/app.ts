@@ -113,6 +113,8 @@ app.get('/metrics', async (req: Request, res: Response) => {
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     message: 'Welcome to the Taller DevOps API!',
+    version: '1.1.0',
+    environment: process.env.NODE_ENV || 'development',
     documentation: 'https://github.com/your-repo/taller-devops',
     endpoints: {
       health: '/health',
