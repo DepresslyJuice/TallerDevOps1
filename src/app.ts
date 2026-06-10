@@ -70,7 +70,9 @@ interface User {
 const mockUsers: User[] = [
   { id: '1', name: 'Alice Smith', email: 'alice@example.com', role: 'Admin' },
   { id: '2', name: 'Bob Jones', email: 'bob@example.com', role: 'User' },
-  { id: '3', name: 'Charlie Brown', email: 'charlie@example.com', role: 'User' }
+  { id: '3', name: 'Charlie Brown', email: 'charlie@example.com', role: 'User' },
+  { id: '0', name: 'Charlie Brown', email: 'charlie@example.com', role: 'User' }
+
 ];
 
 // --- Core Observability Routes ---
@@ -129,7 +131,7 @@ app.get('/', (req: Request, res: Response) => {
 // GET users with optional latency simulation to demonstrate SLO/SLI alert rules
 app.get('/api/users', async (req: Request, res: Response) => {
   const latency = req.query.latency ? parseInt(req.query.latency as string, 10) : 0;
-  
+
   if (latency > 0) {
     logger.warn(`Simulating latency of ${latency}ms`);
     await new Promise(resolve => setTimeout(resolve, latency));
