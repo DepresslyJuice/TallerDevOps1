@@ -70,13 +70,16 @@ interface User {
 const mockUsers: User[] = [
   { id: '1', name: 'Alice Smith', email: 'alice@example.com', role: 'Admin' },
   { id: '2', name: 'Bob Jones', email: 'bob@example.com', role: 'User' },
-  { id: '3', name: 'Charlie Brown', email: 'charlie@example.com', role: 'User' }
+  { id: '3', name: 'Charlie Brown', email: 'charlie@example.com', role: 'User' },
+  { id: '0', name: 'Charlie Brown', email: 'charlie@example.com', role: 'User' }
+
 ];
 
 // --- Core Observability Routes ---
 
 // Health check (Liveness probe)
 app.get('/health', (req: Request, res: Response) => {
+  // BUG: Incorrect status code breaks health check contract
   res.status(200).json({
     status: 'UP',
     timestamp: new Date().toISOString(),
@@ -113,6 +116,8 @@ app.get('/metrics', async (req: Request, res: Response) => {
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     message: 'Welcome to the Taller DevOps API!',
+    version: '1.1.0',
+    environment: process.env.NODE_ENV || 'development',
     documentation: 'https://github.com/your-repo/taller-devops',
     endpoints: {
       health: '/health',
@@ -126,7 +131,7 @@ app.get('/', (req: Request, res: Response) => {
 // GET users with optional latency simulation to demonstrate SLO/SLI alert rules
 app.get('/api/users', async (req: Request, res: Response) => {
   const latency = req.query.latency ? parseInt(req.query.latency as string, 10) : 0;
-  
+
   if (latency > 0) {
     logger.warn(`Simulating latency of ${latency}ms`);
     await new Promise(resolve => setTimeout(resolve, latency));

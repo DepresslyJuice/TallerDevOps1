@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, staging ]
+    branches: [ main, staging, deeeev ]
   pull_request:
-    branches: [ main, staging ]
+    branches: [ main, staging, deeeev ]
 
 jobs:
   # --- 1. INTEGRACION CONTINUA (CI) ---

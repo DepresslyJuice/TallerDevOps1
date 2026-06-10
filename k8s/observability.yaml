@@ -99,19 +99,9 @@ spec:
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: "admin" # Contraseña por defecto para tu taller
-            # --- Configuración de SMTP para Alertas de Correo ---
+            # --- Configuración de SMTP Deshabilitada (Se usa Telegram) ---
             - name: GF_SMTP_ENABLED
-              value: "true"
-            - name: GF_SMTP_HOST
-              value: "smtp.gmail.com:587" # Reemplazar con tu host de SMTP (ej: smtp.mailtrap.io:2525 o smtp.gmail.com:587)
-            - name: GF_SMTP_USER
-              value: "ddamiandelacruzc117@gmail.com" # Tu correo/usuario SMTP
-            - name: GF_SMTP_PASSWORD
-              value: "ilxvrozemnsfqkls" # Contraseña o token SMTP
-            - name: GF_SMTP_FROM_ADDRESS
-              value: "ddamiandelacruzc117@gmail.com"
-            - name: GF_SMTP_FROM_NAME
-              value: "Grafana DevOps Alerts"
+              value: "false"
           volumeMounts:
             - name: grafana-datasources-volume
               mountPath: /etc/grafana/provisioning/datasources/
