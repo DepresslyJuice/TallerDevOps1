@@ -91,7 +91,7 @@ metadata:
   name: api-secret
 type: Opaque
 data:
-  DATABASE_URL: dGVzdF9kYg== # "test_db" en base64
+  DATABASE_URL: dGVzdF9kYg== # "test_db" en base64 gitleaks:allow
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
