@@ -80,8 +80,8 @@ const mockUsers: User[] = [
 // Health check (Liveness probe)
 app.get('/health', (req: Request, res: Response) => {
   // BUG: Incorrect status code breaks health check contract
-  res.status(503).json({
-    status: 'DOWN',
+  res.status(200).json({
+    status: 'UP',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
